@@ -39,15 +39,15 @@ module "frontend" {
   sg_name = "frontend"
 }
 
-# module "web_alb" {
-#   source = "../../terraform-aws-securitygroup"
-#   project_name = var.project_name
-#   environment = var.environment
-#   sg_description = "SG for Web ALB Instances"
-#   vpc_id = data.aws_ssm_parameter.vpc_id.value
-#   common_tags = var.common_tags
-#   sg_name = "web-alb"
-# }
+module "web_alb" {
+  source = "../../terraform-aws-securitygroup"
+  project_name = var.project_name
+  environment = var.environment
+  sg_description = "SG for Web ALB Instances"
+  vpc_id = data.aws_ssm_parameter.vpc_id.value
+  common_tags = var.common_tags
+  sg_name = "web-alb"
+}
 
 module "bastion" {
   source = "../../terraform-aws-securitygroup"
@@ -161,14 +161,14 @@ resource "aws_security_group_rule" "app_alb_frontend" {
   security_group_id = module.app_alb.sg_id
 }
 
-# resource "aws_security_group_rule" "frontend_web_alb" {
-#   type              = "ingress"
-#   from_port         = 80
-#   to_port           = 80
-#   protocol          = "tcp"
-#   source_security_group_id = module.web_alb.sg_id 
-#   security_group_id = module.frontend.sg_id
-# }
+resource "aws_security_group_rule" "frontend_web_alb" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  source_security_group_id = module.web_alb.sg_id 
+  security_group_id = module.frontend.sg_id
+}
 
 resource "aws_security_group_rule" "frontend_bastion" {
   type              = "ingress"
@@ -188,23 +188,23 @@ resource "aws_security_group_rule" "frontend_vpn" {
   security_group_id = module.frontend.sg_id
 }
 
-# resource "aws_security_group_rule" "web_alb_public" {
-#   type              = "ingress"
-#   from_port         = 80
-#   to_port           = 80
-#   protocol          = "tcp"
-#   cidr_blocks = ["0.0.0.0/0"]
-#   security_group_id = module.web_alb.sg_id
-# }
+resource "aws_security_group_rule" "web_alb_public" {
+  type              = "ingress"
+  from_port         = 80
+  to_port           = 80
+  protocol          = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = module.web_alb.sg_id
+}
 
-# resource "aws_security_group_rule" "web_alb_public_https" {
-#   type              = "ingress"
-#   from_port         = 443
-#   to_port           = 443
-#   protocol          = "tcp"
-#   cidr_blocks = ["0.0.0.0/0"]
-#   security_group_id = module.web_alb.sg_id
-# }
+resource "aws_security_group_rule" "web_alb_public_https" {
+  type              = "ingress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  security_group_id = module.web_alb.sg_id
+}
 
 resource "aws_security_group_rule" "bastion_public" {
   type              = "ingress"

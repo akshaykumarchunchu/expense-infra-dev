@@ -7,7 +7,7 @@ terraform {
   }
   backend "s3" {
     bucket = "terraform-akshaydaw.78s-remote-state"
-    key    = "expense-infra-app-alb"
+    key    = "expense-infra-acm"
     region = "us-east-1"
     dynamodb_table = "akshaydaws-78s-locking"
   }
